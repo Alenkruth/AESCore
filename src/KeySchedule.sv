@@ -18,6 +18,8 @@ module KeySchedule(
     input logic [255:0] key_i,
     // input clock
     input logic clk_i,
+    // input hold for clock gating
+    input logic hold_i,
     // input reset
     input logic rst_n,
     // enable signal
@@ -26,6 +28,8 @@ module KeySchedule(
     input logic [3:0] round_count_i,
     // output ready
     output logic ready_o,
+    // output done
+    // output logic done_o,
     // output busy
     output logic busy_o,
     // output keys
@@ -45,6 +49,10 @@ module KeySchedule(
     
     // word in 
     logic [31:0] word_i;
+
+    // gated clock for the logic
+    logic clk_g;
+    assign clk_g = clk_i & hold_i;
     
     // key input
     logic [127:0] key_in;
@@ -67,8 +75,8 @@ module KeySchedule(
     logic rst_g;
     logic rst_gn;
     
-    assign rst_fn = rst_f & rst_n;
-    assign rst_gn = rst_g & rst_n;
+    assign rst_fn = rst_f & rst_n & hold_i;
+    assign rst_gn = rst_g & rst_n & hold_i;
     
     logic [127:0] key_out_g;
     logic [127:0] key_out_f;
@@ -81,7 +89,7 @@ module KeySchedule(
     logic [127:0] key_round2;
     
     FunctionF fxor
-                (.clk_i       (clk_i       ),
+                (.clk_i       (clk_g       ),
                  .rst_n       (rst_fn      ),
                  .en_i        (enable_fxor ),
                  .ready_o     (ready_fxor  ),
@@ -92,7 +100,7 @@ module KeySchedule(
                  .key_o       (key_out_f   ));
                  
     FunctionGXOR gxor
-                    (.clk_i        (clk_i      ),
+                    (.clk_i        (clk_g      ),
                      .rst_n        (rst_gn     ),
                      .en_i         (enable_gxor),
                      .ready_o      (ready_gxor ),
@@ -105,7 +113,7 @@ module KeySchedule(
 //                      SIX,SEVEN,EIGHT,NINE,TEN,ELEVEN,
 //                      TWELVE,THIRTEEN,FOURTEEN,FIFTEEN} key_mux;
                       
-    enum logic [1:0] {READY,IDLE,COMPUTE,LOAD} fsm_cs, fsm_ns;
+    enum logic [1:0] {IDLE,COMPUTE,LOAD} fsm_cs, fsm_ns;
     
     always_comb
     begin
@@ -119,11 +127,11 @@ module KeySchedule(
         
         unique case (fsm_cs)
             
-            READY:
+            /*READY:
             begin
                 ready_o = 1'b1;
                 fsm_ns = IDLE;
-            end
+            end*/
             
             IDLE:
             begin
@@ -201,7 +209,7 @@ module KeySchedule(
                         rcon_in = 8'bzzzzzzzz;
                         enable_gxor = 1'b1;
                         rst_f = 1'b0;
-                        if (ready_fxor) fsm_ns = LOAD;
+                        if (ready_gxor) fsm_ns = LOAD;
                     end
                     
                     default:
@@ -215,12 +223,14 @@ module KeySchedule(
             LOAD:
             begin
                 ready_o = 1'b1;
-                fsm_ns = READY;
+                fsm_ns = IDLE;
             end
+	    
+            default:;
         endcase
     end
     
-    always_ff @(posedge clk_i, negedge rst_n)
+    always_ff @(posedge clk_g, negedge rst_n)
     begin
         if (~rst_n) begin
             fsm_cs <= IDLE;
@@ -235,19 +245,22 @@ module KeySchedule(
         end    
     end
     
-    always_ff @(posedge clk_i)
+    always_ff @(posedge clk_g)
     begin
-        if (rst_n) begin 
+        // done_o <= 1'b0;
+        if (rst_n) begin
             unique case (round_count_i)
                 
                 4'b0000:
                 begin
                     key_reg <= key_i[255:128];
+                    // done_o <= 1'b1;
                 end
                 
                 4'b0001:
                 begin
-                    key_reg <= (en_i) ? key_i[127:  0] : key_reg;
+                    key_reg <= (hold_i & ready_o ) ? key_i[127:  0] : key_reg;
+                    // done_o <= 1'b1;
                 end
                 
                 4'b0010,4'b0100,
@@ -255,29 +268,34 @@ module KeySchedule(
                 4'b1010,4'b1100,
                 4'b1110:
                 begin
-                    key_reg <= (ready_fxor & en_i ) ? key_out_f : key_reg ;
+                    key_reg <= (ready_fxor & hold_i & ready_o) ? key_out_f : key_reg ;
+                    // done_o <= 1'b1;
                 end
                 
                 4'b0011,4'b0101,
                 4'b0111,4'b1001,
                 4'b1011,4'b1101:
                 begin
-                    key_reg <= (ready_gxor & en_i ) ? key_out_g : key_reg ;
+                    key_reg <= (ready_gxor & hold_i & ready_o) ? key_out_g : key_reg ;
+                    // done_o <= 1'b1;
                 end
                 
                 default:;
                 
             endcase
         end
-        else key_reg <= '0;
+        else begin
+            key_reg <= '0;
+            // done_o  <= 1'b0;
+        end
     end
     
     always_comb
     begin
-        key_round2 = (en_i) ? key_round1 : key_round2;
-        key_round1 = (en_i) ? key_reg : key_round1 ;
+        key_round2 = (ready_o) ? key_round1 : key_round2;
+        key_round1 = (ready_o) ? key_reg : key_round1 ;
     end
-    
+
     assign busy_o = busy_fxor | busy_gxor | ready_o;
     assign key_o = key_reg;
     

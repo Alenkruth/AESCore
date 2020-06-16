@@ -11,12 +11,16 @@
 //`include "MultiplyByTwo.sv"
 module MixColumn(
     //input data 
-    input logic [127:0] data_i,
+    input logic clk_i,
+    input logic [127:0] state_i,
     //control signals
-    //input logic rst_ni,
+    input logic en_i,
+    input logic rst_n,
     //output data
-    output logic [127:0] data_o
+    output logic [127:0] state_o
     );
+    
+    logic [127:0] data;
     
     //wire to store shifted byte
     logic [7:0] shifted;
@@ -78,12 +82,20 @@ module MixColumn(
                                      data_i[((32*i)+16)+:8] ^
                                      MultiplyTwo(data_i[((32*i)+24)+:8]);*/
                                      
-            data_o[i*32+:8]  = MultiplyTwo(data_i[(i*32)+:8])^(data_i[(i*32 + 8)+:8])^(data_i[(i*32 + 16)+:8])^MultiplyThree(data_i[(i*32 + 24)+:8]);
-            data_o[(i*32 + 8)+:8] = MultiplyThree(data_i[(i*32)+:8])^MultiplyTwo(data_i[(i*32 + 8)+:8])^(data_i[(i*32 + 16)+:8])^(data_i[(i*32 + 24)+:8]);
-            data_o[(i*32 + 16)+:8] = (data_i[(i*32)+:8])^MultiplyThree(data_i[(i*32 + 8)+:8])^MultiplyTwo(data_i[(i*32 + 16)+:8])^(data_i[(i*32 + 24)+:8]);
-            data_o[(i*32 + 24)+:8]  = (data_i[(i*32)+:8])^(data_i[(i*32 + 8)+:8])^MultiplyThree(data_i[(i*32 + 16)+:8])^MultiplyTwo(data_i[(i*32 + 24)+:8]);
+            data [i*32+:8]  = MultiplyTwo(state_i[(i*32)+:8])^(state_i[(i*32 + 8)+:8])^(state_i[(i*32 + 16)+:8])^MultiplyThree(state_i[(i*32 + 24)+:8]);
+            data [(i*32 + 8)+:8] = MultiplyThree(state_i[(i*32)+:8])^MultiplyTwo(state_i[(i*32 + 8)+:8])^(state_i[(i*32 + 16)+:8])^(state_i[(i*32 + 24)+:8]);
+            data [(i*32 + 16)+:8] = (state_i[(i*32)+:8])^MultiplyThree(state_i[(i*32 + 8)+:8])^MultiplyTwo(state_i[(i*32 + 16)+:8])^(state_i[(i*32 + 24)+:8]);
+            data [(i*32 + 24)+:8]  = (state_i[(i*32)+:8])^(state_i[(i*32 + 8)+:8])^MultiplyThree(state_i[(i*32 + 16)+:8])^MultiplyTwo(state_i[(i*32 + 24)+:8]);
         end
     end
     
+    always_ff @(posedge clk_i, negedge rst_n)
+        begin
+            if (~rst_n)
+                state_o <= '0;
+            else if (en_i)
+                state_o <= data;
+            else state_o <= '0;
+        end
     
 endmodule

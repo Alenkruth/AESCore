@@ -11,13 +11,35 @@
 
 module AddRoundKey(
     //input data and key wires
-    input logic [127:0] data_i,
+    input logic [127:0] state_i,
     input logic [127:0] key_i,
+    // handshake signals
+    input logic en_i,
+    input logic rst_n,
+    // clock signal
+    input logic clk_i,
     //output data
-    output logic [127:0] data_o
+    output logic [127:0] state_o
     );
     
+    logic [127:0] data;
+    
     //Add roinf key is a simple bitwise XOR operation
-    assign data_o = data_i ^ key_i;
+    assign data = state_i ^ key_i;
+    
+    always_ff @(posedge clk_i, negedge rst_n)
+    begin
+        if (~rst_n)
+        begin
+            state_o <= '0;
+        end
+        
+        else if (en_i)
+        begin
+            state_o <= data;
+        end
+        
+        else state_o <= '0;
+    end
 
 endmodule
