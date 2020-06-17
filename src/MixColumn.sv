@@ -17,11 +17,13 @@ module MixColumn(
     input logic en_i,
     input logic rst_n,
     //output data
-    output logic [127:0] state_o
+    output logic [127:0] state_o,
+    output logic done_o
     );
     
     logic [127:0] data;
-    
+    logic [127:0] state;
+    logic done;
     //wire to store shifted byte
     logic [7:0] shifted;
     
@@ -53,11 +55,11 @@ module MixColumn(
     endfunction
     
     // the bytes in data_i are vertically arranged in a matrix to form the state matrix
-    //  _                                                         _
-    // | data_i[ 7: 0] data_i[39:32] data_i[71:64] data_i[103: 96] |
-    // | data_i[15: 8] data_i[47:40] data_i[79:72] data_i[111:104] |
-    // | data_i[23:16] data_i[55:48] data_i[87:80] data_i[119:112] |
-    // |_data_i[31:24] data_i[63:56] data_i[95:88] data_i[127:120]_|
+    //  _                                                               _
+    // | data_i[127:120] data_i[ 95:88 ] data_i[ 63:56 ] data_i[ 31:24 ] |
+    // | data_i[119:112] data_i[ 87:80 ] data_i[ 55:48 ] data_i[ 23:16 ] |
+    // | data_i[111:104] data_i[ 79:72 ] data_i[ 47:40 ] data_i[ 15: 8 ] |
+    // |_data_i[103: 96] data_i[ 71:64 ] data_i[ 39:32 ] data_i[ 7:0 ]  _|
     //
     ////////////////////////////////////////////////////////////////////////////////////
     
@@ -92,10 +94,23 @@ module MixColumn(
     always_ff @(posedge clk_i, negedge rst_n)
         begin
             if (~rst_n)
-                state_o <= '0;
+            begin
+                state <= '0;
+                done <= 1'b0;
+            end
             else if (en_i)
-                state_o <= data;
-            else state_o <= '0;
+            begin
+                state <= data;
+                done <= 1'b1;
+            end
+            else
+            begin
+                state <= state_i;
+                done <= 1'b0;
+            end
         end
     
+    assign state_o = state;
+    assign done_o = done;
+
 endmodule

@@ -119,11 +119,13 @@ module KeySchedule(
     begin
         rst_g = 1'b1;
         rst_f = 1'b1;
+        ready_o = 1'b0;
         enable_gxor = 1'b0;
         enable_fxor = 1'b0;
         fsm_ns = fsm_cs;
         word_i = key_round1[31:0];
-        key_in = key_round2;   
+        key_in = key_round2; 
+	rcon_in = 8'bzzzzzzzz;  
         
         unique case (fsm_cs)
             
@@ -290,10 +292,10 @@ module KeySchedule(
         end
     end
     
-    always_comb
+    always_latch
     begin
         key_round2 = (ready_o) ? key_round1 : key_round2;
-        key_round1 = (ready_o) ? key_reg : key_round1 ;
+        key_round1 = (ready_o) ? key_reg : key_round1;
     end
 
     assign busy_o = busy_fxor | busy_gxor | ready_o;

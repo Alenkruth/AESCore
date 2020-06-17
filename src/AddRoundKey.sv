@@ -19,10 +19,13 @@ module AddRoundKey(
     // clock signal
     input logic clk_i,
     //output data
+    output logic done_o,
     output logic [127:0] state_o
     );
     
     logic [127:0] data;
+    logic [127:0] state;
+    logic done;
     
     //Add roinf key is a simple bitwise XOR operation
     assign data = state_i ^ key_i;
@@ -31,15 +34,24 @@ module AddRoundKey(
     begin
         if (~rst_n)
         begin
-            state_o <= '0;
+            state <= '0;
+            done <= 1'b0;
         end
         
         else if (en_i)
         begin
-            state_o <= data;
+            state <= data;
+            done  <= 1'b1;
         end
         
-        else state_o <= '0;
+        else
+        begin
+            state <= state;
+            done  <= 1'b0;
+        end
     end
+    
+    assign state_o = state;
+    assign done_o = done;
 
 endmodule
