@@ -17,7 +17,6 @@ module ShiftRow(
     );
     
     logic [127:0] data;
-    logic [127:0] state;
     
     // the bytes in data_i are vertically arranged in a matrix to form the state matrix
     //  _                                                               _
@@ -61,14 +60,7 @@ module ShiftRow(
             state_o <= data;
         else state_o <= state_o;
     end*/
-    
-    always_comb
-    begin
-        if(~rst_n) state = data;
-        else if(en_i) state = data;
-        else data = data;
-    end
-    
-    assign state_o = state;
+      
+    assign state_o = (en_i & ~rst_n) ? data : state_i;
        
 endmodule
