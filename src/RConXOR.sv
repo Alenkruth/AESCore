@@ -1,12 +1,12 @@
 `timescale 1ns / 1ps
 ////////////////////////////////////////////////////////////////////////////////////
 // Author:        Alenkruth                                                       //
-// Design Name:   G Function in Key Expansion                                     //
+// Design Name:   X-Or with round constant                                        //
 // Project Name:  RISC-V Crypto Extension                                         //
 // Language:      System Verilog                                                  //
 // Description:   The module consists of the XOR of state and RCon in the Key     //
 //                expansion.                                                      //
-//                                                                                //
+//-----------------NOT USED-------------------------------------------------------//
 ////////////////////////////////////////////////////////////////////////////////////
 
 

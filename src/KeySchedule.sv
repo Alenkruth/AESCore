@@ -8,11 +8,6 @@
 // Reference:     https://crypto.stackexchange.com/a/1527                         //
 ////////////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////////
-// The scheduler malfunctions if en_i becomes low in between the process          //
-// To-Do - Modify the design to function properly with respect to en_i            //
-////////////////////////////////////////////////////////////////////////////////////
-
 module KeySchedule(
     // input key data
     input logic [255:0] key_i,
@@ -107,11 +102,7 @@ module KeySchedule(
                      .busy_o       (busy_gxor  ),
                      .word_i       (word_i     ),
                      .key_o        (key_out_g  ),
-                     .key_round2_i (key_in     )); 
-                     
-//    enum logic [3:0] {ZERO,ONE,TWO,THREE,FOUR,FIVE,
-//                      SIX,SEVEN,EIGHT,NINE,TEN,ELEVEN,
-//                      TWELVE,THIRTEEN,FOURTEEN,FIFTEEN} key_mux;
+                     .key_round2_i (key_in     ));
                       
     enum logic [1:0] {IDLE,COMPUTE,LOAD} fsm_cs, fsm_ns;
     
@@ -128,12 +119,6 @@ module KeySchedule(
 	rcon_in = 8'bzzzzzzzz;  
         
         unique case (fsm_cs)
-            
-            /*READY:
-            begin
-                ready_o = 1'b1;
-                fsm_ns = IDLE;
-            end*/
             
             IDLE:
             begin
@@ -249,20 +234,18 @@ module KeySchedule(
     
     always_ff @(posedge clk_g)
     begin
-        // done_o <= 1'b0;
+        
         if (rst_n) begin
             unique case (round_count_i)
                 
                 4'b0000:
                 begin
                     key_reg <= key_i[255:128];
-                    // done_o <= 1'b1;
                 end
                 
                 4'b0001:
                 begin
                     key_reg <= (hold_i & ready_o ) ? key_i[127:  0] : key_reg;
-                    // done_o <= 1'b1;
                 end
                 
                 4'b0010,4'b0100,
@@ -271,7 +254,6 @@ module KeySchedule(
                 4'b1110:
                 begin
                     key_reg <= (ready_fxor & hold_i & ready_o) ? key_out_f : key_reg ;
-                    // done_o <= 1'b1;
                 end
                 
                 4'b0011,4'b0101,
@@ -279,7 +261,6 @@ module KeySchedule(
                 4'b1011,4'b1101:
                 begin
                     key_reg <= (ready_gxor & hold_i & ready_o) ? key_out_g : key_reg ;
-                    // done_o <= 1'b1;
                 end
                 
                 default:;
@@ -288,7 +269,6 @@ module KeySchedule(
         end
         else begin
             key_reg <= '0;
-            // done_o  <= 1'b0;
         end
     end
     

@@ -4,9 +4,9 @@
 // Design Name:   Rotate Word in Key Expansion                                    //
 // Project Name:  RISC-V Crypto Extension                                         //
 // Language:      System Verilog                                                  //
-// Description:   The module consists of the Rotate word operation in the Key    //
+// Description:   The module consists of the Rotate word operation in the Key     //
 //                expansion.                                                      //
-//                                                                                //
+//----------------NOT USED--------------------------------------------------------//
 ////////////////////////////////////////////////////////////////////////////////////
 
 
