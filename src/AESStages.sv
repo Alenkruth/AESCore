@@ -4,12 +4,7 @@
 // Design Name:   Wrapper module for all the AES encryption stages                //
 // Project Name:  RISC-V Crypto Extension                                         //
 // Language:      System Verilog                                                  //
-// Description:   The module consists of the AddRoundKey operation of Rijndael    //
-//                                                                                //
-////////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////////
-// To-Do : Add clock gating to reduce dynamic power comsumption during idling     //
+// Description:   The module consists of all the stages to perform one round      //
 //                                                                                //
 ////////////////////////////////////////////////////////////////////////////////////
 
@@ -38,20 +33,25 @@ module AESStages(
     
     // done signals from the modules
     logic done_addroundkey;
-    logic done_shiftrow;
     logic done_mixcolumn;
+    logic done_shiftrow;
     logic done_subbyte;
     
     // reset signals for the modules
     logic reset_subbyte_in;
     logic reset_mixcolumn_in;
-    // separate resets for add round key and shift row are not necessary
+    logic reset_shiftrow_in;
+    logic reset_addroundkey_in;
     
     logic reset_subbyte;
     logic reset_mixcolumn;
+    logic reset_shiftrow;
+    logic reset_addroundkey;
     
     assign reset_subbyte_in = reset_subbyte & rst_n & hold_i;
     assign reset_mixcolumn_in = reset_mixcolumn & rst_n & hold_i;
+    assign reset_shiftrow_in = reset_shiftrow & rst_n & hold_i;
+    assign reset_addroundkey_in = reset_addroundkey &rst_n & hold_i;
     
     // state inputs to stages
     logic [127:0] state_in_addroundkey;
@@ -68,47 +68,47 @@ module AESStages(
     logic [127:0] state_out_reg;
     
     // states of FSM
-    enum logic [2:0] {IDLE,SUBBYTE,MIXCOLUMN,ADDROUNDKEY,LOAD} fsm_cs,fsm_ns;
+    enum logic [2:0] {IDLE,SUBBYTE,SHIFTROW,MIXCOLUMN,ADDROUNDKEY,LOAD} fsm_cs,fsm_ns;
     
     //assign input data for the addroundkey module
     assign state_in_addroundkey = (zero_round_i) ? round_state_i : state_out_mixcolumn;
     
     // assign input data for the subbyte module
-    assign state_in_subbyte = (~zero_round_i) ? round_state_i : '0;
-    
-    // enable for the shift rows module
-    assign enable_shiftrow = ~zero_round_i;
+    assign state_in_subbyte = round_state_i ;
       
     SubByte16 subbyte
-                    (.state_i(state_in_subbyte),
-                     .en_i   (enable_subbyte),
-                     .clk_i  (clk_i),
-                     .rst_n  (reset_subbyte_in),
-                     .done_o (done_subbyte),
-                     .state_o(state_out_subbyte));
+                    (.state_i(state_in_subbyte  ),
+                     .en_i   (enable_subbyte    ),
+                     .clk_i  (clk_g             ),
+                     .rst_n  (reset_subbyte_in  ),
+                     .done_o (done_subbyte      ),
+                     .state_o(state_out_subbyte ));
                      
     ShiftRow shiftrow
-                    (.state_i(state_out_subbyte),
-                     .en_i   (enable_shiftrow),
-                     .rst_n  (rst_n),
+                    (.state_i(state_out_subbyte ),
+                     .en_i   (enable_shiftrow   ),
+                     .clk_i  (clk_g             ),
+                     .rst_n  (reset_shiftrow_in ),
+                     .done_o (done_shiftrow     ),
                      .state_o(state_out_shiftrow));
     
     MixColumn mixcolumn
-                    (.state_i(state_out_shiftrow),
-                     .en_i   (enable_mixcolumn),
-                     .clk_i  (clk_i),
-                     .rst_n  (reset_mixcolumn_in),
-                     .done_o (done_mixcolumn),
-                     .state_o(state_out_mixcolumn));
+                    (.state_i       (state_out_shiftrow ),
+                     .en_i          (enable_mixcolumn   ),
+                     .clk_i         (clk_g              ),
+                     .rst_n         (reset_mixcolumn_in ),
+                     .last_round_i  (final_round_i      ),
+                     .done_o        (done_mixcolumn     ),
+                     .state_o       (state_out_mixcolumn));
                      
     AddRoundKey arkey
-                    (.state_i(state_in_addroundkey),
-                     .key_i  (round_key_i),
-                     .en_i   (enable_addroundkey),
-                     .clk_i  (clk_i),
-                     .rst_n  (rst_n),
-                     .done_o (done_addroundkey),
-                     .state_o(state_out_addroundkey));
+                    (.state_i(state_in_addroundkey  ),
+                     .key_i  (round_key_i           ),
+                     .en_i   (enable_addroundkey    ),
+                     .clk_i  (clk_g                 ),
+                     .rst_n  (rst_n                 ),
+                     .done_o (done_addroundkey      ),
+                     .state_o(state_out_addroundkey ));
                      
     always_comb
     begin
@@ -116,8 +116,10 @@ module AESStages(
         enable_addroundkey = 1'b0;
         enable_subbyte     = 1'b0;
         enable_mixcolumn   = 1'b0;
+        enable_shiftrow    = 1'b0;
         reset_subbyte      = 1'b1;
         reset_mixcolumn    = 1'b1;
+        reset_shiftrow     = 1'b1;
         fsm_ns = fsm_cs;
         
         unique case(fsm_cs)
@@ -127,6 +129,7 @@ module AESStages(
                 done_o = 1'b0;
                 reset_subbyte = 1'b0;
                 reset_mixcolumn = 1'b0;
+                reset_shiftrow = 1'b0;
                 if (zero_round_i) fsm_ns = ADDROUNDKEY;
                 else fsm_ns = SUBBYTE;
             end
@@ -135,8 +138,15 @@ module AESStages(
             begin
                 done_o = 1'b0;
                 enable_subbyte = 1'b1;
-                reset_mixcolumn = 1'b0;
-                if (done_subbyte) fsm_ns = MIXCOLUMN; 
+                //reset_mixcolumn = 1'b0;
+                if (done_subbyte) fsm_ns = SHIFTROW; 
+            end
+            
+            SHIFTROW:
+            begin
+                done_o = 1'b0;
+                enable_shiftrow = 1'b1;
+                if (done_shiftrow) fsm_ns = MIXCOLUMN;
             end
             
             MIXCOLUMN:
@@ -144,7 +154,7 @@ module AESStages(
                 done_o = 1'b0;
                 if (final_round_i) enable_mixcolumn = 1'b0;
                 else enable_mixcolumn = 1'b1;
-                reset_subbyte = 1'b0;
+                //reset_subbyte = 1'b0;
                 if (done_mixcolumn) fsm_ns = ADDROUNDKEY;
             end
             
@@ -152,8 +162,8 @@ module AESStages(
             begin
                 done_o = 1'b0;
                 enable_addroundkey = 1'b1;
-                reset_subbyte = 1'b0;
-                reset_mixcolumn = 1'b0;
+                //reset_subbyte = 1'b0;
+                //reset_mixcolumn = 1'b0;
                 if (done_addroundkey) fsm_ns = LOAD;
             end
             
