@@ -16,6 +16,7 @@ module MixColumn(
     //control signals
     input logic en_i,
     input logic rst_n,
+    input logic last_round_i,
     //output data
     output logic [127:0] state_o,
     output logic done_o
@@ -105,8 +106,16 @@ module MixColumn(
             end
             else
             begin
-                state <= state_i;
-                done <= 1'b0;
+                if (last_round_i)
+                begin
+                    state <= state_i;
+                    done <= 1'b1;
+                end
+                else 
+                begin
+                    state <= state;
+                    done <= 1'b0;
+                end
             end
         end
     

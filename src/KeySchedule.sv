@@ -22,9 +22,7 @@ module KeySchedule(
     // output key select lines
     input logic [3:0] round_count_i,
     // output ready
-    output logic ready_o,
-    // output done
-    // output logic done_o,
+    output logic done_o,
     // output busy
     output logic busy_o,
     // output keys
@@ -102,7 +100,11 @@ module KeySchedule(
                      .busy_o       (busy_gxor  ),
                      .word_i       (word_i     ),
                      .key_o        (key_out_g  ),
-                     .key_round2_i (key_in     ));
+                     .key_round2_i (key_in     )); 
+                     
+//    enum logic [3:0] {ZERO,ONE,TWO,THREE,FOUR,FIVE,
+//                      SIX,SEVEN,EIGHT,NINE,TEN,ELEVEN,
+//                      TWELVE,THIRTEEN,FOURTEEN,FIFTEEN} key_mux;
                       
     enum logic [1:0] {IDLE,COMPUTE,LOAD} fsm_cs, fsm_ns;
     
@@ -110,27 +112,36 @@ module KeySchedule(
     begin
         rst_g = 1'b1;
         rst_f = 1'b1;
-        ready_o = 1'b0;
+        done_o = 1'b0;
         enable_gxor = 1'b0;
         enable_fxor = 1'b0;
         fsm_ns = fsm_cs;
         word_i = key_round1[31:0];
         key_in = key_round2; 
-	rcon_in = 8'bzzzzzzzz;  
+	    rcon_in = 8'bzzzzzzzz;  
         
         unique case (fsm_cs)
+            
+            /*READY:
+            begin
+                ready_o = 1'b1;
+                fsm_ns = IDLE;
+            end*/
             
             IDLE:
             begin
                 rst_g = 1'b0;
                 rst_f = 1'b0;
-                ready_o = 1'b0;         
-                fsm_ns = COMPUTE;
+                done_o = 1'b0;
+                if ( round_count_i <= 4'b0001) begin
+                    fsm_ns = LOAD;
+                end         
+                else fsm_ns = COMPUTE;
             end
             
             COMPUTE:
             begin
-                ready_o = 1'b0;
+                done_o = 1'b0;
                 unique case (round_count_i)
                     4'b0010:
                     begin
@@ -209,7 +220,7 @@ module KeySchedule(
             
             LOAD:
             begin
-                ready_o = 1'b1;
+                done_o = 1'b1;
                 fsm_ns = IDLE;
             end
 	    
@@ -234,18 +245,20 @@ module KeySchedule(
     
     always_ff @(posedge clk_g)
     begin
-        
+        // done_o <= 1'b0;
         if (rst_n) begin
             unique case (round_count_i)
                 
                 4'b0000:
                 begin
                     key_reg <= key_i[255:128];
+                    // done_o <= 1'b1;
                 end
                 
                 4'b0001:
                 begin
-                    key_reg <= (hold_i & ready_o ) ? key_i[127:  0] : key_reg;
+                    key_reg <= (hold_i & done_o ) ? key_i[127:  0] : key_reg;
+                    // done_o <= 1'b1;
                 end
                 
                 4'b0010,4'b0100,
@@ -253,14 +266,16 @@ module KeySchedule(
                 4'b1010,4'b1100,
                 4'b1110:
                 begin
-                    key_reg <= (ready_fxor & hold_i & ready_o) ? key_out_f : key_reg ;
+                    key_reg <= (ready_fxor & hold_i & done_o) ? key_out_f : key_reg ;
+                    // done_o <= 1'b1;
                 end
                 
                 4'b0011,4'b0101,
                 4'b0111,4'b1001,
                 4'b1011,4'b1101:
                 begin
-                    key_reg <= (ready_gxor & hold_i & ready_o) ? key_out_g : key_reg ;
+                    key_reg <= (ready_gxor & hold_i & done_o) ? key_out_g : key_reg ;
+                    // done_o <= 1'b1;
                 end
                 
                 default:;
@@ -269,16 +284,17 @@ module KeySchedule(
         end
         else begin
             key_reg <= '0;
+            // done_o  <= 1'b0;
         end
     end
     
     always_latch
     begin
-        key_round2 = (ready_o) ? key_round1 : key_round2;
-        key_round1 = (ready_o) ? key_reg : key_round1;
+        key_round2 = (done_o) ? key_round1 : key_round2;
+        key_round1 = (done_o) ? key_reg : key_round1;
     end
 
-    assign busy_o = busy_fxor | busy_gxor | ready_o;
+    assign busy_o = busy_fxor | busy_gxor | done_o;
     assign key_o = key_reg;
     
 endmodule 
