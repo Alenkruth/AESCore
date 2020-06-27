@@ -78,6 +78,8 @@ module XORkey(
                 ready_o = 1'b1;
                 sel_ns = IDLE;
             end
+            
+            default:;
         endcase
     end
     

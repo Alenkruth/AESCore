@@ -113,6 +113,8 @@ module FunctionF(
                 ready_o = 1'b1;
                 fsm_ns = READY;
             end
+            
+            default:;
         endcase
     end
     
