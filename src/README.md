@@ -1,8 +1,6 @@
 # AESCore <br/>
 **TOP MODULE** -> AESTop.sv <br/>
-The module takes **187** clock cycles to complete encryption of 128bits (ModelSimStudent edition). <br/>
-
-The module takes **157** clock cycles to complete encryption of 128bits (ModelSim-INTEL FPGA edition).<br/>
+The module takes **157** clock cycles to complete encryption of 128bits.<br/>
 
 
 ## Synthesis Report <br/>
