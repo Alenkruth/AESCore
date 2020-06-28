@@ -1,6 +1,9 @@
 # AESCore <br/>
 **TOP MODULE** -> AESTop.sv <br/>
-The module takes **188** clock cycles to complete encryption of 128bits.
+The module takes **187** clock cycles to complete encryption of 128bits (ModelSimStudent edition). <br/>
+
+The module takes **157** clock cycles to complete encryption of 128bits (ModelSim-INTEL FPGA edition).<br/>
+
 
 ## Synthesis Report <br/>
 Software - Vivado v2019.2 (64-bit) <br/>
