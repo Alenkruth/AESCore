@@ -1,2 +1,4 @@
 src/MixColumnError.sv #ignores file
 MixColumnError.sv 
+TestVector.vcd #old versions
+CustomTestVector.vcd #old versions
