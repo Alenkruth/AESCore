@@ -23,7 +23,7 @@ module SubByte
 
 	//Data Signals 
 	input logic [7:0] data_i,
-	output logic [7:0] data_inv,
+	//output logic [7:0] data_inv,
 	output logic [7:0] data_o
 	);
 
@@ -38,7 +38,7 @@ module SubByte
   logic [3:0] nib_inverse; //inverse of nib_added in GF(16)
   logic [3:0] nib_hinv;    //inverse multiplied with nib_high
   logic [3:0] nib_linv;    //inverse multiplied with nib_hlmulb
-  //logic [7:0] data_inv;    //inverted byte data in GF(256)
+  logic [7:0] data_inv;    //inverted byte data in GF(256)
 
   //assign value from data_i to data
   assign data = data_i;
