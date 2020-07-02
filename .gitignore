@@ -1,3 +1,5 @@
 MixColumnError.sv #ignore file
 TestVector.vcd #old versions
 CustomTestVector.vcd #old versions
+src/RConXor.sv
+src/RotateState.sv

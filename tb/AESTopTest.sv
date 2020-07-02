@@ -1,7 +1,10 @@
 `timescale 1ns / 1ps
-
-// A simple testbench to test the functioning of the core
-
+//////////////////////////////////////////////////////////////////////////////
+// Author      : Alenkruth
+// Language    : SystemVerilog
+// Description : A simple testbench to test the functioning of the core in ECB
+//               mode
+///////////////////////////////////////////////////////////////////////////////               
 module AESTopTest(
 
     );
