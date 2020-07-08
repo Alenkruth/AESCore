@@ -4,7 +4,7 @@
 // Design Name:   Top Module for the AES core (AESStages + KeySchedule)           //
 // Project Name:  RISC-V Crypto Extension                                         //
 // Language:      System Verilog                                                  //
-// Description:   The module implements a FSM for operation of Rijndael           //
+// Description:   The module performs encryption/decryption of 128b data          //
 //                                                                                //
 ////////////////////////////////////////////////////////////////////////////////////
 
