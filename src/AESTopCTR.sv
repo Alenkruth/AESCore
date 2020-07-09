@@ -169,7 +169,7 @@ module AESTop(
     assign random_vector = key_i[127:0];
     assign last_round = ((rround_count == 4'b1110)& hold_round) ? 1'b1:1'b0;
     assign zero_round = ((rround_count == 4'b0000)& hold_round) ? 1'b1:1'b0;
-    //assign plaintext = random_vector;
+    assign plaintext = plaintext_i;
     assign AESround_in = ( zero_round ) ? random_vector : AESroundn_out; 
         
     always_comb
