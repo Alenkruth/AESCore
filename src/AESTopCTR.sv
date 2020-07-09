@@ -8,6 +8,10 @@
 //                                                                                //
 ////////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////////
+// ToDo - Generate a nonce for IV rather than utilizing a slice of the key        //
+////////////////////////////////////////////////////////////////////////////////////
+
 module AESTop(
     input logic clk_i,
     input logic rst_n,
@@ -19,6 +23,9 @@ module AESTop(
     );
     
     // input and output data for the modules
+    logic [127:0] random_vector; //output from counter - supposedly random
+    // we assume that the key vector is random and use partial words from 
+    // the key as the random input. 
     logic [255:0] keySchedule_in;
     logic [127:0] keySchedule_out;
     logic [127:0] rkeySchedule_in;
@@ -158,10 +165,12 @@ module AESTop(
     end
     
     // round FSM
+    // the random vector(IV) is taken from the key! 
+    assign random_vector = key_i[127:0];
     assign last_round = ((rround_count == 4'b1110)& hold_round) ? 1'b1:1'b0;
     assign zero_round = ((rround_count == 4'b0000)& hold_round) ? 1'b1:1'b0;
-    assign plaintext = plaintext_i;
-    assign AESround_in = ( zero_round ) ? plaintext : AESroundn_out; 
+    //assign plaintext = random_vector;
+    assign AESround_in = ( zero_round ) ? random_vector : AESroundn_out; 
         
     always_comb
     begin
@@ -268,7 +277,7 @@ module AESTop(
         else ciphertext <= '0;
     end  
     
-    assign ciphertext_o = ciphertext;
+    assign ciphertext_o = ciphertext ^ plaintext;
     assign done_o = (rround_count == 4'hf) & done_round;          
     
 endmodule
