@@ -4,3 +4,6 @@ CustomTestVector.vcd #old versions
 src/RConXor.sv
 src/RotateState.sv
 src/*.bak
+CustomTestVector20.vcd
+TestVector20.vcd
+tb/*.bak
