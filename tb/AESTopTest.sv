@@ -14,6 +14,7 @@ module AESTopTest(
     logic [127:0] ciphertext_test;
     logic enable;
     logic reset;
+    logic busy;
     logic done;
     logic clock;
     logic clock_gated;
@@ -27,6 +28,7 @@ module AESTopTest(
              .plaintext_i(plaintext_test),
              .ciphertext_o(ciphertext_test),
              .done_o(done),
+             .busy_o(busy),
              .key_i(key_test));
 
     assign clock_gated = clock & enable;
