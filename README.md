@@ -2,7 +2,7 @@
 AES core capable of performing AES 256 Encryption in CTR/GCM modes.
 
 ## To Do
-rename all files and modules to 'aes_<operation>' <br/>
+rename all files and modules to 'aes<_previousnameofthemodule>' <br/>
 
 ## Organization of the Repository
 **Source Files** <br/>
