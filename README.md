@@ -1,6 +1,9 @@
 # AESCore
 AES core capable of performing AES 256 Encryption in CTR/GCM modes.
 
+## To Do
+rename all files and modules to 'aes_<operation>' <br/>
+
 ## Organization of the Repository
 **Source Files** <br/>
 The [src](https://github.com/Alenkruth/AESCore/tree/master/src) contains all the modules.
