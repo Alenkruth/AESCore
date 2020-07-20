@@ -15,6 +15,7 @@ module AESTop(
     input logic [255:0] key_i,
     input logic en_i,  // acts like a hold signal
     output logic done_o,
+    output logic busy_o,
     output logic [127:0] ciphertext_o    
     );
     
@@ -269,6 +270,7 @@ module AESTop(
     end  
     
     assign ciphertext_o = ciphertext;
-    assign done_o = (rround_count == 4'hf) & done_round;          
+    assign done_o = (rround_count == 4'hf) & done_round; 
+    assign busy_o = ~done_o;        
     
 endmodule

@@ -14,6 +14,7 @@ module AESTopTest(
     logic [127:0] ciphertext_test;
     logic enable;
     logic reset;
+    logic busy;
     logic done;
     logic clock;
     logic clock_gated;
@@ -26,6 +27,7 @@ module AESTopTest(
              .en_i(enable),
              .plaintext_i(plaintext_test),
              .ciphertext_o(ciphertext_test),
+             .busy_o(busy),
              .done_o(done),
              .key_i(key_test));
 
@@ -60,7 +62,8 @@ module AESTopTest(
         key_test = 256'h7465737474657374746573747465737474657374746573747465737474657374; // testtesttesttesttesttesttesttest in ASCII
         // the cipher text is 4419ce8172f99fa38dc6119260edb3f8
         ///////////////////////////////////////////////////////
-        #4000;
+        #3600 enable = 1'b0;
+        #400;
         $stop;
     end
 
