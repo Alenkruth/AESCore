@@ -12,7 +12,7 @@
 // ToDo - Generate a nonce for IV rather than utilizing a slice of the key        //
 ////////////////////////////////////////////////////////////////////////////////////
 
-module AESTop(
+module aes_AESTop(
     input logic clk_i,
     input logic rst_n,
     input logic [127:0] plaintext_i,
@@ -72,7 +72,7 @@ module AESTop(
     logic last_round;
     logic zero_round;
     
-    AESStages round
+    aes_AESStages round
                 (.round_state_i(AESround_in),
                  .round_key_i(rkeySchedule_in),
                  .en_i(enable_round),
@@ -84,7 +84,7 @@ module AESTop(
                  .done_o(done_round),
                  .round_state_o(AESround_out));
                  
-    KeySchedule scheduler
+    aes_KeySchedule scheduler
                 (.key_i(keySchedule_in),
                  .clk_i(clk_g),
                  .en_i(enable_keyschedule),

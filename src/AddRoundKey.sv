@@ -9,7 +9,7 @@
 ////////////////////////////////////////////////////////////////////////////////////
 
 
-module AddRoundKey(
+module aes_AddRoundKey(
     //input data and key wires
     input logic [127:0] state_i,
     input logic [127:0] key_i,

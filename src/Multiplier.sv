@@ -9,7 +9,7 @@
 //                                                                                //
 ////////////////////////////////////////////////////////////////////////////////////
 `timescale 1ns/1ps
-module Multiplier
+module aes_Multiplier
 	(
   // input data
   input logic [3:0] operand_a_i,

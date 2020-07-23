@@ -9,7 +9,7 @@
 //                                                                                //
 ////////////////////////////////////////////////////////////////////////////////////
 `timescale 1ns/1ps
-module Inverse
+module aes_Inverse
 	(
 	//input data
 	input logic [3:0] data_i,

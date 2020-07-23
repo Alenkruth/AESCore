@@ -8,7 +8,7 @@
 // Reference:     https://crypto.stackexchange.com/a/1527                         //
 ////////////////////////////////////////////////////////////////////////////////////
 
-module KeySchedule(
+module aes_KeySchedule(
     // input key data
     input logic [255:0] key_i,
     // input clock
@@ -81,7 +81,7 @@ module KeySchedule(
     logic [127:0] key_round1;
     logic [127:0] key_round2;
     
-    FunctionF fxor
+    aes_FunctionF fxor
                 (.clk_i       (clk_g       ),
                  .rst_n       (rst_fn      ),
                  .en_i        (enable_fxor ),
@@ -92,7 +92,7 @@ module KeySchedule(
                  .rcon_i      (rcon_in     ),
                  .key_o       (key_out_f   ));
                  
-    FunctionGXOR gxor
+    aes_FunctionGXOR gxor
                     (.clk_i        (clk_g      ),
                      .rst_n        (rst_gn     ),
                      .en_i         (enable_gxor),

@@ -9,7 +9,7 @@
 ////////////////////////////////////////////////////////////////////////////////////
 
 
-module ShiftRow(
+module aes_ShiftRow(
     input logic [127:0] state_i,
     input logic en_i,
     input logic clk_i,

@@ -10,7 +10,7 @@
 //                                                                                //
 ////////////////////////////////////////////////////////////////////////////////////
 
-module FunctionG(
+module aes_FunctionG(
     // word in 
     input logic [31:0] word_i,
     // word out
@@ -28,16 +28,16 @@ module FunctionG(
     logic [31:0] subword;
     enum logic [1:0] {READY,IDLE,OUT} cs,ns;
     
-    SubByte Instance3 
+    aes_SubByte Instance3 
                     (.data_i(word_i[31:24]),
                      .data_o(subword[31:24]));
-    SubByte Instance2 
+    aes_SubByte Instance2 
                     (.data_i(word_i[23:16]),
                      .data_o(subword[23:16]));
-    SubByte Instance1 
+    aes_SubByte Instance1 
                     (.data_i(word_i[15: 8]),
                      .data_o(subword[15: 8]));
-    SubByte Instance0 
+    aes_SubByte Instance0 
                     (.data_i(word_i[ 7: 0]),
                      .data_o(subword[ 7: 0]));   
     assign word_o = subword;

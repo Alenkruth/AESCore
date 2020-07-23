@@ -5,7 +5,7 @@
 // Description : A simple testbench to test the functioning of the core in CTR //
 //               mode                                                          //
 /////////////////////////////////////////////////////////////////////////////////               
-module AESTopTest(
+module aes_AESTopTest(
 
     );
     
@@ -21,7 +21,7 @@ module AESTopTest(
     logic [9:0] counter;
 
     
-    AESTop DUT
+    aes_AESTop DUT
             (.clk_i(clock_gated),
              .rst_n(reset),
              .en_i(enable),

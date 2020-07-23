@@ -9,7 +9,7 @@
 //                                                                                //
 ////////////////////////////////////////////////////////////////////////////////////
 `timescale 1ns/1ps
-module Squarer
+module aes_Squarer
 	(
 	//input operand
 	input logic [3:0] operand_i,

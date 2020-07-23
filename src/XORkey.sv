@@ -9,7 +9,7 @@
 ////////////////////////////////////////////////////////////////////////////////////
 
 
-module XORkey(
+module aes_XORkey(
     // input word
     input logic [ 31:0] op_xor_i,
     // input clock
@@ -41,22 +41,22 @@ module XORkey(
     assign xorkey_in2 = key_xor_i[ 63:32];
     assign xorkey_in3 = key_xor_i[ 31: 0];
     
-    xors instance1
+    aes_xors instance1
                 (.data_in (op_xor_i),
                  .key_in  (xorkey_in0),
                  .data_out(xor_out0));
   
-    xors instance2
+    aes_xors instance2
                 (.data_in (xor_out0),
                  .key_in  (xorkey_in1),
                  .data_out(xor_out1));
    
-    xors instance3
+    aes_xors instance3
                 (.data_in (xor_out1),
                  .key_in  (xorkey_in2),
                  .data_out(xor_out2));
                  
-    xors instance4
+    aes_xors instance4
                 (.data_in (xor_out2),
                  .key_in  (xorkey_in3),
                  .data_out(xor_out3));
@@ -100,7 +100,7 @@ module XORkey(
 
 endmodule
 
-module xors(
+module aes_xors(
             input logic  [ 31:0] data_in,
             input logic  [ 31:0] key_in,
             output logic [ 31:0] data_out

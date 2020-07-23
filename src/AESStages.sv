@@ -8,7 +8,7 @@
 //                                                                                //
 ////////////////////////////////////////////////////////////////////////////////////
 
-module AESStages(
+module aes_AESStages(
     input logic  [127:0] round_state_i,
     input logic  [127:0] round_key_i,
     input logic en_i,
@@ -76,7 +76,7 @@ module AESStages(
     // assign input data for the subbyte module
     assign state_in_subbyte = round_state_i ;
       
-    SubByte16 subbyte
+    aes_SubByte16 subbyte
                     (.state_i(state_in_subbyte  ),
                      .en_i   (enable_subbyte    ),
                      .clk_i  (clk_g             ),
@@ -84,7 +84,7 @@ module AESStages(
                      .done_o (done_subbyte      ),
                      .state_o(state_out_subbyte ));
                      
-    ShiftRow shiftrow
+    aes_ShiftRow shiftrow
                     (.state_i(state_out_subbyte ),
                      .en_i   (enable_shiftrow   ),
                      .clk_i  (clk_g             ),
@@ -92,7 +92,7 @@ module AESStages(
                      .done_o (done_shiftrow     ),
                      .state_o(state_out_shiftrow));
     
-    MixColumn mixcolumn
+    aes_MixColumn mixcolumn
                     (.state_i       (state_out_shiftrow ),
                      .en_i          (enable_mixcolumn   ),
                      .clk_i         (clk_g              ),
@@ -101,7 +101,7 @@ module AESStages(
                      .done_o        (done_mixcolumn     ),
                      .state_o       (state_out_mixcolumn));
                      
-    AddRoundKey arkey
+    aes_AddRoundKey arkey
                     (.state_i(state_in_addroundkey  ),
                      .key_i  (round_key_i           ),
                      .en_i   (enable_addroundkey    ),

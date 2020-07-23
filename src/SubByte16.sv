@@ -9,7 +9,7 @@
 ////////////////////////////////////////////////////////////////////////////////////
 
 
-module SubByte16(
+module aes_SubByte16(
     input en_i,
     input rst_n,
     input clk_i,
@@ -23,67 +23,67 @@ module SubByte16(
     logic [127:0] state;
     logic done;
     
-    SubByte sub0 
+    aes_SubByte sub0 
                 (.data_i(state_i[127:120]),
                  .data_o(data   [127:120]));
                  
-    SubByte sub1 
+    aes_SubByte sub1 
                 (.data_i(state_i[119:112]),
                  .data_o(data   [119:112]));
                  
-    SubByte sub2 
+    aes_SubByte sub2 
                 (.data_i(state_i[111:104]),
                  .data_o(data   [111:104]));
                  
-    SubByte sub3 
+    aes_SubByte sub3 
                 (.data_i(state_i[103: 96]),
                  .data_o(data   [103: 96]));
                  
-    SubByte sub4 
+    aes_SubByte sub4 
                 (.data_i(state_i[ 95: 88]),
                  .data_o(data   [ 95: 88]));
                  
-    SubByte sub5 
+    aes_SubByte sub5 
                 (.data_i(state_i[ 87: 80]),
                  .data_o(data   [ 87: 80]));
                  
-    SubByte sub6 
+    aes_SubByte sub6 
                 (.data_i(state_i[ 79: 72]),
                  .data_o(data   [ 79: 72]));
                  
-    SubByte sub7 
+    aes_SubByte sub7 
                 (.data_i(state_i[ 71: 64]),
                  .data_o(data   [ 71: 64]));
                  
-    SubByte sub8 
+    aes_SubByte sub8 
                 (.data_i(state_i[ 63: 56]),
                  .data_o(data   [ 63: 56]));
                  
-    SubByte sub9 
+    aes_SubByte sub9 
                 (.data_i(state_i[ 55: 48]),
                  .data_o(data   [ 55: 48]));
                  
-    SubByte sub10 
+    aes_SubByte sub10 
                 (.data_i(state_i[ 47: 40]),
                  .data_o(data   [ 47: 40]));
                  
-    SubByte sub11 
+    aes_SubByte sub11 
                 (.data_i(state_i[ 39: 32]),
                  .data_o(data   [ 39: 32]));
     
-    SubByte sub12
+    aes_SubByte sub12
                 (.data_i(state_i[ 31: 24]),
                  .data_o(data   [ 31: 24]));
     
-    SubByte sub13 
+    aes_SubByte sub13 
                 (.data_i(state_i[ 23: 16]),
                  .data_o(data   [ 23: 16]));
                  
-    SubByte sub14 
+    aes_SubByte sub14 
                 (.data_i(state_i[ 15:  8]),
                  .data_o(data   [ 15:  8]));
 
-    SubByte sub15
+    aes_SubByte sub15
                 (.data_i(state_i[  7:  0]),
                  .data_o(data   [  7:  0]));
                  

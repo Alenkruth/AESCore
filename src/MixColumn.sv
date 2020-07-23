@@ -9,7 +9,7 @@
 ////////////////////////////////////////////////////////////////////////////////////
 
 //`include "MultiplyByTwo.sv"
-module MixColumn(
+module aes_MixColumn(
     //input data 
     input logic clk_i,
     input logic [127:0] state_i,

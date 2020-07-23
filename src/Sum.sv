@@ -9,7 +9,7 @@
 //                                                                                //
 ////////////////////////////////////////////////////////////////////////////////////
 `timescale 1ns/1ps
-module Sum
+module aes_Sum
 	(
 	//input data
 	input logic [3:0] operand_a_i,

@@ -9,7 +9,7 @@
 //                                                                                //
 ////////////////////////////////////////////////////////////////////////////////////
 `timescale 1ns/1ps 
-module SubByte
+module aes_SubByte
 	(
 	//clock and reset
 	//input logic clk_i,
@@ -68,57 +68,57 @@ module SubByte
   assign nib_low[1] = data[1] ^ data[2];
   assign nib_low[0] = bit_C ^ data[0] ^ data[5];
 
-  Squarer squarer1 
+  aes_Squarer squarer1 
   				(
   				.operand_i(nib_high),
   				.squared_o(nib_highsquared)
   				);
-  Squarer squarer2 
+  aes_Squarer squarer2 
   				(
   				.operand_i(nib_low),
   				.squared_o(nib_lowsquared)
   				);
-  Multiplier multiply1 
+  aes_Multiplier multiply1 
   				(
   				.operand_a_i(nib_high),
   				.operand_b_i(nib_low),
   				.product_o  (nib_hlmul)
   				);
-  Sum sum1
+  aes_Sum sum1
   				(
   				.operand_a_i(nib_high),
   				.operand_b_i(nib_low),
   				.sum_o      (nib_hladded)
   				);
-  Multiplier_e multiplye
+  aes_Multiplier_e multiplye
   				(
   				.operand_i(nib_highsquared),
   				.product_o(nib_highxe)
   				);
-  Sum sum2
+  aes_Sum sum2
   				(
   				.operand_a_i(nib_highxe),
   				.operand_b_i(nib_lowsquared),
   				.sum_o			(nib_hladda)
   				);
-  Sum sum3
+  aes_Sum sum3
   				(
   				.operand_a_i(nib_hladda),
   				.operand_b_i(nib_hlmul),
   				.sum_o			(nib_added)
   				);
-  Inverse inverse
+  aes_Inverse inverse
   				(
   				.data_i   (nib_added),
   				.invdata_o(nib_inverse)
   				);
-  Multiplier multiply2
+  aes_Multiplier multiply2
   				(
   				.operand_a_i(nib_high),
   				.operand_b_i(nib_inverse),
   				.product_o  (nib_hinv)
   				);
-  Multiplier multiply3
+  aes_Multiplier multiply3
   				(
   				.operand_a_i(nib_inverse),
   				.operand_b_i(nib_hladded),
@@ -142,7 +142,7 @@ module SubByte
   assign data_inv[1] = bit_BI ^ nib_hinv[3];
   assign data_inv[0] = nib_linv[0] ^ nib_hinv[0];
 
-  affineTrans affine1
+  aes_affineTrans affine1
   				(
   				.data_i(data_inv),
   				.data_o(data_o)

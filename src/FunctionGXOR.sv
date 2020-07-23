@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////
 
 
- module FunctionGXOR(
+ module aes_FunctionGXOR(
     // input word
     input logic [31:0] word_i,
     // input clk_i
@@ -47,7 +47,7 @@
     assign word_xor = result_g;
     assign busy_o   = enable_g | enable_xor | ready_o ;
     
-    FunctionG funcG
+    aes_FunctionG funcG
                     (.word_i      (word_g       ),
                      .word_o      (result_g     ),
                      .clk_i       (clk_i        ),
@@ -55,7 +55,7 @@
                      .rst_n       (rst_n        ),
                      .ready_o     (ready_g_o    ));
                      
-    XORkey xors
+    aes_XORkey xors
                     (.op_xor_i    (word_xor     ),
                      .clk_i       (clk_i        ),
                      .rst_n       (rst_n        ),

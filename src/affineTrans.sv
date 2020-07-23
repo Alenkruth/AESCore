@@ -9,7 +9,7 @@
 //                                                                                //
 ////////////////////////////////////////////////////////////////////////////////////
 `timescale 1ns/1ps
-module affineTrans
+module aes_affineTrans
 	(
 	//input data
 	input logic [7:0] data_i,

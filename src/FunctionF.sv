@@ -9,7 +9,7 @@
 //                                                                                //
 ////////////////////////////////////////////////////////////////////////////////////
 
-module FunctionF(
+module aes_FunctionF(
     // input state
     input logic [31:0] word_i,
     // input rcon value
@@ -50,7 +50,7 @@ module FunctionF(
     
     enum logic [2:0] {READY,IDLE,COMPUTE_G_RCON,COMPUTE_XOR,LOAD} fsm_cs,fsm_ns;
            
-    FunctionG funcG
+    aes_FunctionG funcG
                     (.word_i      (result_rotate),
                      .word_o      (result_g     ),
                      .clk_i       (clk_i        ),
@@ -59,7 +59,7 @@ module FunctionF(
                      .ready_o     (ready_g_o    ));
                      
                      
-    XORkey xors
+    aes_XORkey xors
                     (.op_xor_i    (result_rcon  ),
                      .clk_i       (clk_i        ),
                      .en_i        (enable_xor   ),
