@@ -280,5 +280,5 @@ module aes_AESTop(
     
     assign ciphertext_o = ciphertext ^ plaintext;
     assign done_o = (rround_count == 4'hf) & done_round;          
-    assign busy_o = ~done_o;   
+    assign busy_o = ~done_o & rst_n;   
 endmodule
