@@ -1,6 +1,11 @@
 # AESCore
 AES core capable of performing AES 256 Encryption in CTR/GCM modes.
 
+The design is complete, You can clone and test the design. (Small changes may be made in the future) <br/>
+
+Branch Master -> Plain old AES (ECB Mode) <br/>
+Branch CTR    -> AES in CTR mode (A slice of the key is taken as IV) <br/>
+
 ## Organization of the Repository
 **Source Files** <br/>
 The [src](https://github.com/Alenkruth/AESCore/tree/master/src) contains all the modules.
