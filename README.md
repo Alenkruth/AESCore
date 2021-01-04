@@ -1,5 +1,5 @@
 # AESCore
-AES core capable of performing AES 256 Encryption in CTR/GCM modes.
+AES core capable of performing 256bit Encryption in CTR/GCM modes.
 
 The design is complete, You can clone and test the design. (Small changes may be made in the future) <br/>
 
